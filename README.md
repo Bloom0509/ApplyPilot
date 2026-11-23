@@ -30,9 +30,10 @@ AI-assisted job search and application workspace. Candidate data stays under can
 
    docker compose up -d
 
-3. Install the API into a Python 3.11+ environment:
+3. Install the API into a Python 3.11+ environment and apply the initial database migration:
 
    pip install -e backend
+   alembic -c backend/alembic.ini upgrade head
 
 4. From the project root, run the API:
 
@@ -48,4 +49,4 @@ The web app runs at http://localhost:5173. API docs run at http://localhost:8000
 
 ## Current scope
 
-This is a runnable starting scaffold. The dashboard uses sample data. Agent workflows, profile extraction, persistence, job source integrations, application generation, and submission integrations are next.
+The candidate profile API is the first persisted workflow. The dashboard still uses sample data, and sign-in, resume extraction, job source integrations, matching, application generation, and submission integrations are planned next. The initial profile API is single-workspace and is not ready for multi-user deployment until authentication and candidate ownership are added.

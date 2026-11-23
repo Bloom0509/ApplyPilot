@@ -13,6 +13,8 @@ dependencies = [
   "pydantic-settings",
   "python-multipart",
   "psycopg[binary]",
+  "sqlalchemy>=2.0",
+  "alembic>=1.13",
   "pgvector",
   "redis",
   "celery",

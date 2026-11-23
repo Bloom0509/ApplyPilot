@@ -12,6 +12,34 @@ The React client will call the versioned FastAPI API. The API owns validation an
 4. The application workflow pauses for candidate review and approval.
 5. Tracking and follow-up reminders continue after the candidate records or authorizes an application action.
 
+## First usable workflow: candidate profile
+
+The first end-to-end product workflow lets a candidate create a profile, review it, and save it for later job matching. The initial version uses manual entry; resume import and AI-assisted extraction can follow once profile editing and persistence are in place.
+
+### Candidate journey
+
+1. The candidate opens Career profile and chooses to create or edit their profile.
+2. They enter contact details, target roles and locations, work preferences, experience, education, skills, and optionally paste resume text. Resume file parsing is follow-on work.
+3. The app validates required fields and shows a review summary before saving.
+4. The candidate edits any field, then saves the profile.
+5. The app confirms the save and displays the saved profile when the candidate returns.
+
+### Initial scope and product rules
+
+- A candidate can have one editable profile in this first release.
+- Profile fields are candidate-provided; do not infer or silently alter facts.
+- Required fields should be limited to what is needed to begin matching. Optional fields remain clearly optional.
+- Resume import and AI extraction are follow-on work. If extraction is later added, extracted facts must be presented for candidate review before they become confirmed profile data.
+- Saving a profile does not submit applications or share profile data with employers.
+
+### Acceptance criteria
+
+- A candidate can create, read, update, and save a profile.
+- Invalid input receives field-level feedback and is not saved.
+- A successful save survives an API or page restart and is shown on the next visit.
+- The profile screen shows whether the profile is empty, loading, saved, or failed to save.
+- Profile data is scoped to its candidate owner before multi-user access is enabled.
+
 ## Planned modules
 
 - app/agents/ — profile, discovery, JD analysis, matching, resume, cover letter, application, tracking, supervisor agents
