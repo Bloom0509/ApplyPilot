@@ -4,7 +4,7 @@
 class Settings(BaseSettings):
     app_name: str = "ApplyPilot"
     environment: str = "development"
-    database_url: str = "postgresql+psycopg://applypilot:applypilot@localhost:5432/applypilot"
+    database_url: str = "postgresql+psycopg://postgres:root@localhost:5432/applypilot"
     redis_url: str = "redis://localhost:6379/0"
     openai_api_key: str | None = None
     langsmith_api_key: str | None = None

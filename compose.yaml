@@ -3,14 +3,14 @@
     image: pgvector/pgvector:pg16
     environment:
       POSTGRES_DB: applypilot
-      POSTGRES_USER: applypilot
-      POSTGRES_PASSWORD: applypilot
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U applypilot -d applypilot"]
+      test: ["CMD-SHELL", "pg_isready -U postgres -d applypilot"]
       interval: 5s
       timeout: 5s
       retries: 10
