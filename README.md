@@ -49,4 +49,4 @@ The web app runs at http://localhost:5173. API docs run at http://localhost:8000
 
 ## Current scope
 
-The candidate profile API is the first persisted workflow. The dashboard still uses sample data, and sign-in, resume extraction, job source integrations, matching, application generation, and submission integrations are planned next. The initial profile API is single-workspace and is not ready for multi-user deployment until authentication and candidate ownership are added.
+The candidate profile is the first persisted workflow. The Career profile screen is connected to the API and supports creating, reviewing, and editing candidate-provided details; the dashboard uses clearly labeled sample job and activity data. Sign-in, resume file extraction, job source integrations, matching, application generation, and submission integrations are planned next. The initial profile API is single-workspace and is not ready for multi-user deployment until authentication and candidate ownership are added.
