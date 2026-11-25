@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import ProfileField from "./ProfileField.jsx";
+import { parseResume } from "../services/api.js";
 
 const emptyProfile = {
   full_name: "",
@@ -31,6 +32,11 @@ export default function CareerProfile({ profile, profileState, onRetry, onSave }
   const [saving, setSaving] = useState(false);
   const [saveMessage, setSaveMessage] = useState("");
   const [saveError, setSaveError] = useState("");
+  const [resumeFile, setResumeFile] = useState(null);
+  const [resumeSuggestion, setResumeSuggestion] = useState(null);
+  const [resumeLoading, setResumeLoading] = useState(false);
+  const [resumeError, setResumeError] = useState("");
+  const [resumeMessage, setResumeMessage] = useState("");
 
   useEffect(() => setDraft(profile || emptyProfile), [profile]);
 
@@ -56,6 +62,41 @@ export default function CareerProfile({ profile, profileState, onRetry, onSave }
     }
   }
 
+  async function extractResume() {
+    if (!resumeFile) return;
+    setResumeLoading(true);
+    setResumeError("");
+    setResumeMessage("");
+    setResumeSuggestion(null);
+    try {
+      const result = await parseResume(resumeFile);
+      setResumeSuggestion(result.suggested_profile);
+      setResumeMessage(result.message);
+    } catch (error) {
+      setResumeError(error.message || "We could not read that resume file.");
+    } finally {
+      setResumeLoading(false);
+    }
+  }
+
+  function applyResumeSuggestions() {
+    if (!resumeSuggestion) return;
+    setDraft((current) => {
+      const next = { ...current };
+      for (const field of listFields) {
+        const values = resumeSuggestion[field] || [];
+        if (values.length) next[field] = values.join(", ");
+      }
+      for (const field of ["full_name", "email", "experience", "education", "resume_text"]) {
+        if (resumeSuggestion[field]) next[field] = resumeSuggestion[field];
+      }
+      return next;
+    });
+    setSaveMessage("");
+    setSaveError("");
+    setResumeMessage("Suggestions added to the form. Review and edit them before saving.");
+  }
+
   if (profileState === "loading") {
     return <section className="profile-view"><p role="status">Loading your profile…</p></section>;
   }
@@ -78,6 +119,25 @@ export default function CareerProfile({ profile, profileState, onRetry, onSave }
       <div className={`profile-state ${profile ? "saved" : "empty"}`} role="status">
         {profile ? "Profile saved · You can update these details any time." : "No profile saved yet · Add your details below to get started."}
       </div>
+
+      <section className="resume-import">
+        <h2>Import a resume</h2>
+        <p>We extract text and suggest profile details on this server. Nothing is saved until you review the fields and choose Save profile.</p>
+        <div className="resume-import-controls">
+          <input type="file" accept=".pdf,.docx,.txt,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain" onChange={(event) => { setResumeFile(event.target.files?.[0] || null); setResumeSuggestion(null); setResumeError(""); setResumeMessage(""); }} />
+          <button className="secondary-button" type="button" disabled={!resumeFile || resumeLoading} onClick={extractResume}>{resumeLoading ? "Extracting…" : "Extract details"}</button>
+        </div>
+        <small>PDF, DOCX, or TXT · up to 8 MB. Scanned images inside PDFs need OCR and are not supported yet.</small>
+        {resumeError && <p className="form-error" role="alert">{resumeError}</p>}
+        {resumeMessage && <p className="form-success" role="status">{resumeMessage}</p>}
+        {resumeSuggestion && <div className="resume-review">
+          <strong>Review extracted information</strong>
+          <p>Name: {resumeSuggestion.full_name || "Not detected"} · Email: {resumeSuggestion.email || "Not detected"}</p>
+          <p>Skills detected: {resumeSuggestion.skills.length ? resumeSuggestion.skills.join(", ") : "None"}</p>
+          <details><summary>View extracted resume text</summary><pre>{resumeSuggestion.resume_text}</pre></details>
+          <button className="secondary-button" type="button" onClick={applyResumeSuggestions}>Use these suggestions in the form</button>
+        </div>}
+      </section>
 
       <form className="profile-form" onSubmit={submit}>
         <div className="form-section">
@@ -103,7 +163,7 @@ export default function CareerProfile({ profile, profileState, onRetry, onSave }
           <div className="form-grid">
             <ProfileField label="Experience" name="experience" value={draft.experience} onChange={update} multiline />
             <ProfileField label="Education" name="education" value={draft.education} onChange={update} multiline />
-            <ProfileField label="Resume text (optional)" name="resume_text" value={draft.resume_text} onChange={update} multiline help="Paste text if useful. Resume file upload is not available yet." />
+            <ProfileField label="Resume text (optional)" name="resume_text" value={draft.resume_text} onChange={update} multiline help="Paste text or review text extracted from your resume file." />
           </div>
         </div>
 
