@@ -26,6 +26,22 @@ The profile contains a required `full_name`; optional `email`, `experience`, `ed
 
 When upgrading a database that contains the old shared profile, the migration leaves that row unassigned so it cannot be exposed to whichever account registers first. Re-enter its details under the intended account after upgrading.
 
+## Job search
+
+`GET /api/v1/jobs` requires a bearer token. It requests a page from the live Arbeitnow job-board API and applies the search filters to that page. Results contain the title, company, location, remote flag, tags, job types, a plain-text description excerpt, posted date, source listing URL, `match_score`, and `match_reasons`. Jobs are ordered by descending score when profile signals are available.
+
+Matching is deterministic and uses only saved candidate-provided data: target roles (30%), skills (45%), preferred locations (15%), and work preferences (10%). A dimension is included only when the candidate has saved values for it; the remaining weights are normalized to 100%. `match_reasons` reports matched and unmatched values and each signal's contribution. If no matching fields have been saved, `match_score` is `null` and listings retain source order. This is a transparent heuristic, not a hiring recommendation or a guarantee of job fit.
+
+| Query parameter | Behavior |
+| --- | --- |
+| `q` | Case-insensitive terms matched against title, company, description, tags, and job type. All terms must match. |
+| `location` | Case-insensitive substring of the job location. |
+| `remote` | `true` returns remote listings; `false` returns those not marked remote. |
+| `job_type` | Case-insensitive substring match against job types. |
+| `page` | Provider page number, starting at 1. |
+
+Provider pages are cached in-process for five minutes. Arbeitnow listings are Europe-focused. The API requires a visible link back to Arbeitnow; its terms say to contact the provider for commercial use.
+
 Apply database migrations before starting the API:
 
 ```powershell

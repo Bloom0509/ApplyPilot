@@ -69,3 +69,12 @@ export async function parseResume(file) {
   formData.append("file", file);
   return request("/api/v1/profile/resume/parse", { method: "POST", body: formData });
 }
+
+export async function getJobs(filters = {}) {
+  const params = new URLSearchParams();
+  for (const [key, value] of Object.entries(filters)) {
+    if (value !== undefined && value !== null && value !== "") params.set(key, String(value));
+  }
+  const query = params.toString();
+  return request(`/api/v1/jobs${query ? `?${query}` : ""}`);
+}

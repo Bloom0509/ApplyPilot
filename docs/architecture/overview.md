@@ -7,7 +7,7 @@ The React client will call the versioned FastAPI API. The API owns validation an
 ## Candidate-controlled workflow
 
 1. Candidate reviews and confirms extracted profile facts.
-2. Discovery and matching produce explainable results tied to profile evidence.
+2. Job discovery retrieves live postings and deterministic matching reports which saved profile signals contributed to each score.
 3. Resume, cover letter, and application answers are generated as drafts.
 4. The application workflow pauses for candidate review and approval.
 5. Tracking and follow-up reminders continue after the candidate records or authorizes an application action.
@@ -48,6 +48,6 @@ Candidate accounts authenticate with expiring bearer tokens. Every profile read 
 - app/agents/ — profile, discovery, JD analysis, matching, resume, cover letter, application, tracking, supervisor agents
 - app/workflows/ — LangGraph state, graph construction, and workflow policies
 - app/rag/ — document chunking, embeddings, pgvector retrieval, and grounded context
-- app/integrations/ — job sources and authorized application providers
+- app/integrations/ — additional job sources and authorized application providers; the first Arbeitnow connector currently lives in `app/services/jobs_provider.py`
 - app/tasks/ — Celery jobs for long-running or scheduled work
 - app/api/v1/ — HTTP endpoints and Pydantic request/response schemas

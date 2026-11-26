@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import AuthPage from "../components/AuthPage.jsx";
 import CareerProfile from "../components/CareerProfile.jsx";
 import Header from "../components/Header.jsx";
+import JobsPage from "../components/JobsPage.jsx";
 import Overview from "../components/Overview.jsx";
 import PlaceholderPage from "../components/PlaceholderPage.jsx";
 import Sidebar from "../components/Sidebar.jsx";
@@ -14,6 +15,7 @@ function App() {
   const [profileError, setProfileError] = useState("");
   const [account, setAccount] = useState(null);
   const [authState, setAuthState] = useState(hasAccessToken() ? "loading" : "signed-out");
+  const checkedSession = useRef(false);
 
   async function loadProfile() {
     setProfileState("loading");
@@ -35,7 +37,8 @@ function App() {
   }
 
   useEffect(() => {
-    if (authState !== "loading") return;
+    if (authState !== "loading" || checkedSession.current) return;
+    checkedSession.current = true;
     getAccount().then((currentAccount) => {
       setAccount(currentAccount);
       setAuthState("signed-in");
@@ -96,6 +99,10 @@ function App() {
           onSave={handleSaveProfile}
         />
       );
+    }
+
+    if (active === "Discover jobs") {
+      return <JobsPage />;
     }
 
     return <PlaceholderPage page={active} onBack={() => setActive("Overview")} />;
