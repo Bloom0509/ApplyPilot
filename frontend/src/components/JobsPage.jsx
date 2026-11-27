@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
-import { getJobs } from "../services/api.js";
+import { getJobs, getSavedJobs, removeSavedJob, saveJob } from "../services/api.js";
 
-function JobCard({ job }) {
+function JobCard({ job, isSaved, isSaving, onToggleSave }) {
   const posted = job.posted_at ? new Date(job.posted_at).toLocaleDateString() : null;
   const labels = [...job.job_types, ...job.tags].slice(0, 5);
 
@@ -12,6 +12,9 @@ function JobCard({ job }) {
         {posted && <time dateTime={job.posted_at}>Posted {posted}</time>}
       </div>
       <h2>{job.title}</h2>
+      <button className={`save-job-button ${isSaved ? "is-saved" : ""}`} type="button" onClick={() => onToggleSave(job)} disabled={isSaving} aria-pressed={isSaved}>
+        {isSaving ? "Saving…" : isSaved ? "Saved · Remove" : "Save job"}
+      </button>
       <div className="discovery-job-meta"><strong>{job.company}</strong><span>{job.location}</span>{job.remote && <span className="job-tag remote-tag">Remote</span>}</div>
       {labels.length > 0 && <div className="job-tags">{labels.map((label) => <span className="job-tag" key={label}>{label}</span>)}</div>}
       <div className="match-explanation">
@@ -43,6 +46,12 @@ export default function JobsPage() {
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState("");
+  const [savedIds, setSavedIds] = useState(() => new Set());
+  const [savingIds, setSavingIds] = useState(() => new Set());
+
+  useEffect(() => {
+    getSavedJobs().then((result) => setSavedIds(new Set(result.jobs.map(({ job }) => job.id)))).catch(() => {});
+  }, []);
 
   useEffect(() => {
     const timer = window.setTimeout(() => setDebouncedQuery(query.trim()), 350);
@@ -100,6 +109,24 @@ export default function JobsPage() {
     }
   }
 
+  async function toggleSaved(job) {
+    setSavingIds((current) => new Set(current).add(job.id));
+    setError("");
+    try {
+      if (savedIds.has(job.id)) {
+        await removeSavedJob(job.id);
+        setSavedIds((current) => { const next = new Set(current); next.delete(job.id); return next; });
+      } else {
+        await saveJob(job);
+        setSavedIds((current) => new Set(current).add(job.id));
+      }
+    } catch (requestError) {
+      setError(requestError.message || "Could not update saved jobs.");
+    } finally {
+      setSavingIds((current) => { const next = new Set(current); next.delete(job.id); return next; });
+    }
+  }
+
   const visibleJobs = jobs.slice(0, visibleCount);
   const canLoadMore = visibleCount < jobs.length || nextPage !== null;
 
@@ -127,7 +154,7 @@ export default function JobsPage() {
       <div className="job-results-heading"><strong>{loading ? "Searching…" : `${total} ${total === 1 ? "listing" : "listings"} in these source pages`}</strong><span>Results link to the original listing.</span></div>
       {error && <p className="form-error" role="alert">{error}</p>}
       {loading ? <p role="status" className="jobs-empty-state">Loading live jobs…</p> : visibleJobs.length === 0 ? <p className="jobs-empty-state">No listings match these filters. Try a broader keyword or location.</p> : (
-        <div className="discovery-job-list">{visibleJobs.map((job) => <JobCard key={job.id} job={job} />)}</div>
+        <div className="discovery-job-list">{visibleJobs.map((job) => <JobCard key={job.id} job={job} isSaved={savedIds.has(job.id)} isSaving={savingIds.has(job.id)} onToggleSave={toggleSaved} />)}</div>
       )}
       {!loading && canLoadMore && <button className="load-more-jobs" type="button" onClick={loadMore} disabled={loadingMore}>{loadingMore ? "Loading…" : "Load more jobs"}</button>}
       <footer className="jobs-attribution">Job listing data provided by <a href="https://www.arbeitnow.com" target="_blank" rel="noopener noreferrer">Arbeitnow</a>. Verify details on the original posting.</footer>

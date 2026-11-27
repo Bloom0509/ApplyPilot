@@ -37,6 +37,7 @@ async function request(path, options = {}) {
     throw new Error(message);
   }
 
+  if (response.status === 204) return null;
   return response.json();
 }
 
@@ -77,4 +78,17 @@ export async function getJobs(filters = {}) {
   }
   const query = params.toString();
   return request(`/api/v1/jobs${query ? `?${query}` : ""}`);
+}
+
+export async function getSavedJobs() {
+  return request("/api/v1/jobs/saved");
+}
+
+export async function saveJob(job) {
+  return request("/api/v1/jobs/saved", { method: "POST", body: JSON.stringify(job) });
+}
+
+export async function removeSavedJob(jobId) {
+  const params = new URLSearchParams({ job_id: jobId });
+  return request(`/api/v1/jobs/saved?${params}`, { method: "DELETE" });
 }

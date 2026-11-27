@@ -14,7 +14,7 @@ class MatchReason(BaseModel):
 
 
 class JobListing(BaseModel):
-    id: str
+    id: str = Field(min_length=1, max_length=1000)
     title: str
     company: str
     location: str
@@ -35,3 +35,12 @@ class JobSearchResponse(BaseModel):
     page: int
     next_page: int | None = None
     source: str = "Arbeitnow"
+
+
+class SavedJobItem(BaseModel):
+    job: JobListing
+    saved_at: datetime
+
+
+class SavedJobsResponse(BaseModel):
+    jobs: list[SavedJobItem]

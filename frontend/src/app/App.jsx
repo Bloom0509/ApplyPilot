@@ -5,6 +5,7 @@ import Header from "../components/Header.jsx";
 import JobsPage from "../components/JobsPage.jsx";
 import Overview from "../components/Overview.jsx";
 import PlaceholderPage from "../components/PlaceholderPage.jsx";
+import SavedJobsPage from "../components/SavedJobsPage.jsx";
 import Sidebar from "../components/Sidebar.jsx";
 import { getAccount, getProfile, hasAccessToken, login, register, saveProfile, setAccessToken } from "../services/api.js";
 
@@ -103,6 +104,10 @@ function App() {
 
     if (active === "Discover jobs") {
       return <JobsPage />;
+    }
+
+    if (active === "Saved jobs") {
+      return <SavedJobsPage onDiscover={() => setActive("Discover jobs")} />;
     }
 
     return <PlaceholderPage page={active} onBack={() => setActive("Overview")} />;

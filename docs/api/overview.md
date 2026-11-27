@@ -42,6 +42,18 @@ Matching is deterministic and uses only saved candidate-provided data: target ro
 
 Provider pages are cached in-process for five minutes. Arbeitnow listings are Europe-focused. The API requires a visible link back to Arbeitnow; its terms say to contact the provider for commercial use.
 
+## Saved jobs
+
+Saved listings are stored as candidate-owned snapshots, so they remain available even if the live source removes or changes a listing. All endpoints require authentication and only return or change the signed-in candidate's saved jobs.
+
+| Method | Path | Behavior |
+| --- | --- | --- |
+| GET | `/api/v1/jobs/saved` | List saved listings, newest first. |
+| POST | `/api/v1/jobs/saved` | Save a job listing snapshot. Saving the same listing again updates its snapshot without creating a duplicate. |
+| DELETE | `/api/v1/jobs/saved?job_id=<listing-id>` | Remove a saved listing. Repeating the request is safe. |
+
+Apply database migrations before using these endpoints; the saved-jobs table is added by revision `20261127_0003`.
+
 Apply database migrations before starting the API:
 
 ```powershell

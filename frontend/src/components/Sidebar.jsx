@@ -1,6 +1,7 @@
 const navigation = [
   { label: "Overview", icon: "◫" },
   { label: "Discover jobs", icon: "⌕" },
+  { label: "Saved jobs", icon: "♡" },
   { label: "Applications", icon: "▤" },
   { label: "Career profile", icon: "♙" },
 ];
@@ -44,7 +45,7 @@ export default function Sidebar({ active, onNavigate, profile }) {
         <div className="help-card">
           <span className="help-spark">✳</span>
           <strong>{profile?.full_name ? "Keep your profile up to date." : "Start with your career profile."}</strong>
-          <p>Your profile will help personalize job matches as those features are added.</p>
+          <p>Your profile helps personalize job matches and saved listings.</p>
           <button onClick={() => onNavigate("Career profile")}>
             {profile?.full_name ? "Edit profile" : "Create profile"} <span>↗</span>
           </button>
