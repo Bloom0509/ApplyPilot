@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import AuthPage from "../components/AuthPage.jsx";
+import ApplicationsPage from "../components/ApplicationsPage.jsx";
 import CareerProfile from "../components/CareerProfile.jsx";
 import Header from "../components/Header.jsx";
 import JobsPage from "../components/JobsPage.jsx";
@@ -108,6 +109,10 @@ function App() {
 
     if (active === "Saved jobs") {
       return <SavedJobsPage onDiscover={() => setActive("Discover jobs")} />;
+    }
+
+    if (active === "Applications") {
+      return <ApplicationsPage />;
     }
 
     return <PlaceholderPage page={active} onBack={() => setActive("Overview")} />;

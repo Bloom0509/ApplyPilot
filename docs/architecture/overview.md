@@ -10,7 +10,7 @@ The React client will call the versioned FastAPI API. The API owns validation an
 2. Job discovery retrieves live postings and deterministic matching reports which saved profile signals contributed to each score.
 3. Resume, cover letter, and application answers are generated as drafts.
 4. The application workflow pauses for candidate review and approval.
-5. Tracking and follow-up reminders continue after the candidate records or authorizes an application action.
+5. Candidate-owned application records track status, dates, notes, and follow-up reminders after the candidate chooses to pursue a listing.
 
 ## First usable workflow: candidate profile
 

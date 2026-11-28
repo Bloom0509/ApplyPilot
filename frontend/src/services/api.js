@@ -92,3 +92,19 @@ export async function removeSavedJob(jobId) {
   const params = new URLSearchParams({ job_id: jobId });
   return request(`/api/v1/jobs/saved?${params}`, { method: "DELETE" });
 }
+
+export async function getApplications() {
+  return request("/api/v1/applications");
+}
+
+export async function createApplication(application) {
+  return request("/api/v1/applications", { method: "POST", body: JSON.stringify(application) });
+}
+
+export async function updateApplication(applicationId, updates) {
+  return request(`/api/v1/applications/${applicationId}`, { method: "PATCH", body: JSON.stringify(updates) });
+}
+
+export async function deleteApplication(applicationId) {
+  return request(`/api/v1/applications/${applicationId}`, { method: "DELETE" });
+}

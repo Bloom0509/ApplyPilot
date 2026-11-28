@@ -54,6 +54,19 @@ Saved listings are stored as candidate-owned snapshots, so they remain available
 
 Apply database migrations before using these endpoints; the saved-jobs table is added by revision `20261127_0003`.
 
+## Application tracking
+
+Application records are private to the signed-in candidate. Status values are `interested`, `applied`, `interviewing`, `offer`, `rejected`, and `withdrawn`. Follow-up dates are stored as calendar dates and surfaced in the Applications page as due, upcoming, or overdue reminders.
+
+| Method | Path | Behavior |
+| --- | --- | --- |
+| GET | `/api/v1/applications` | List the signed-in candidate's applications, newest activity first. Accepts an optional `status` filter. |
+| POST | `/api/v1/applications` | Create an application record. `title` and `company` are required; listing URL, location, status, applied date, notes, and follow-up date are optional. |
+| PATCH | `/api/v1/applications/{application_id}` | Update status, dates, notes, or listing details for an owned record. |
+| DELETE | `/api/v1/applications/{application_id}` | Delete an owned application record. |
+
+Migration revision `20261128_0004` creates the application table. Apply it with `alembic -c backend/alembic.ini upgrade head` before using these endpoints.
+
 Apply database migrations before starting the API:
 
 ```powershell

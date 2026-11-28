@@ -1,6 +1,6 @@
-from datetime import datetime
+from datetime import date, datetime
 
-from sqlalchemy import DateTime, ForeignKey, Integer, JSON, String, Text, UniqueConstraint, func
+from sqlalchemy import CheckConstraint, Date, DateTime, ForeignKey, Integer, JSON, String, Text, UniqueConstraint, func
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.db.base import Base
@@ -55,4 +55,37 @@ class SavedJob(Base):
     job_data: Mapped[dict] = mapped_column(JSON, nullable=False)
     saved_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), nullable=False, server_default=func.now()
+    )
+
+
+class CandidateApplication(Base):
+    __tablename__ = "candidate_applications"
+    __table_args__ = (
+        CheckConstraint(
+            "status IN ('interested', 'applied', 'interviewing', 'offer', 'rejected', 'withdrawn')",
+            name="ck_candidate_applications_status",
+        ),
+        UniqueConstraint("user_id", "job_id", name="uq_candidate_applications_user_job"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    user_id: Mapped[int] = mapped_column(
+        ForeignKey("candidate_users.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    job_id: Mapped[str | None] = mapped_column(String(1000))
+    title: Mapped[str] = mapped_column(String(300), nullable=False)
+    company: Mapped[str] = mapped_column(String(200), nullable=False)
+    location: Mapped[str | None] = mapped_column(String(300))
+    job_url: Mapped[str | None] = mapped_column(String(2000))
+    status: Mapped[str] = mapped_column(
+        String(24), nullable=False, default="interested", server_default="interested"
+    )
+    applied_at: Mapped[date | None] = mapped_column(Date)
+    notes: Mapped[str | None] = mapped_column(Text)
+    follow_up_date: Mapped[date | None] = mapped_column(Date)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, server_default=func.now()
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now()
     )
